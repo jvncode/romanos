@@ -23,11 +23,11 @@ class RomanNumberTest(unittest.TestCase):
         self.assertEqual(romano_a_arabigo("LXXIII"), 73)
         self.assertEqual(romano_a_arabigo("IIII"), 0)
 
-"""
+
     def test_numeros_decrecientes(self):
         self.assertEqual(romano_a_arabigo("CMXCIX"), 999)
-        self.assertEqual(romano_a_arabigo("VC"), 0)
+        self.assertEqual(romano_a_arabigo("VC"), 95)
 
-"""
+
 if __name__ == "__main__":
     unittest.main()

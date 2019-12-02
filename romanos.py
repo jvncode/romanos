@@ -12,6 +12,10 @@ def romano_a_arabigo(numRomano):
             numArabigo += valores[letra]
             if ultimoCaracter == '':
                 pass
+            elif ultimoCaracter == "(":
+                ultimoCaracter = 0
+            elif ultimoCaracter == ")":
+                ultimoCaracter = 0
             elif valores[ultimoCaracter] > valores[letra]:
                 numRepes = 1
             elif valores[ultimoCaracter] == valores[letra]:
@@ -36,9 +40,14 @@ def romano_a_arabigo(numRomano):
 
                 numArabigo -= valores[ultimoCaracter]*2
                 numRepes = 1
+        elif letra == "(":
+            pass
+        elif letra == ")":
+            numArabigo = numArabigo*1000
+            numRepes = 1
+            
         else:  #si el simbolo romano no es permitido devolvemos error (0)
             return 0
-
         ultimoCaracter = letra
 
     return numArabigo

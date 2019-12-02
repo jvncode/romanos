@@ -42,10 +42,59 @@ def romano_a_arabigo(numRomano):
         ultimoCaracter = letra
 
     return numArabigo
-"""
-def arabigo_a_romano(valor):
-    1.- Descomponer valor en dígitos separando millares, centenas, decenas y unidades
-    2.- Procesar uno a uno estos dígitos y transformarlos en su forma romana 
-    3.- Ir concatenando cada resultado en una cadena completa
-    4.- Devolverla
-"""
+
+def arabigo_a_romano(numArabigo):
+
+    numArabigo = str(numArabigo)
+    numDigit = len(numArabigo)
+    
+    numRomano = []
+ 
+    for digit in numArabigo:
+        digit = int(digit)
+        if numDigit == 1:
+            if digit <= 3:
+                numRomano.append(int(digit)*"I")
+            elif digit == 4:
+                numRomano.append("IV")
+            elif digit == 5:
+                numRomano.append("V")
+            elif digit >= 6 and digit <=8:
+                numRomano.append("V"+int(digit-5)*"I")
+            elif digit == 9:
+                numRomano.append("IX")
+            numDigit -= 1
+            
+        if numDigit == 2:
+            if digit <= 3:
+                numRomano.append(int(digit)*"X")
+            elif digit == 4:
+                numRomano.append("XL")
+            elif digit == 5:
+                numRomano.append("L")
+            elif digit >= 6 and digit <=8:
+                numRomano.append("L"+int(digit-5)*"X")
+            elif digit == 9:
+                numRomano.append("XC")
+            numDigit -= 1
+        
+        if numDigit == 3:
+            if digit <= 3:
+                numRomano.append(int(digit)*"C")
+            elif digit == 4:
+                numRomano.append("CD")
+            elif digit == 5:
+                numRomano.append("D")
+            elif digit >= 6 and digit <=8:
+                numRomano.append("D"+int(digit-5)*"C")
+            elif digit == 9:
+                numRomano.append("CM")
+            numDigit -= 1
+        
+        if numDigit == 4:
+            numRomano.append(int(digit)*"M")
+            numDigit -= 1
+            
+        if numDigit == 0:
+            numRomanoCont = "".join(numRomano)
+            return numRomanoCont

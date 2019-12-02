@@ -2,20 +2,50 @@ valores = {'I':1, 'V': 5, 'X':10, 'L': 50, 'C':100, 'D': 500, 'M': 1000}
 valores5 = { 'V': 5,  'L': 50,  'D': 500 } 
 simbolosOrdenados = ['I', 'V', 'X', 'L', 'C', 'D', 'M']
 
+rangos = {
+    0: {1: 'I', 5 : 'V', 'next': 'X'},
+    1: {1: 'X', 5 : 'L', 'next': 'C'},
+    2: {1: 'C', 5 : 'D', 'next': 'M'},
+    3: {1: 'M', 'next': ''}
+}
+
+def numParentesis(cadena):
+    num = 0
+    for c in cadena:
+        if c == '(':
+            num += 1
+        else:
+            break
+    return num
+
+
+def contarParentesis(numRomano):
+    res = []
+    grupoParentesis = numRomano.split(')')
+
+    ix = 0
+    while ix < len(grupoParentesis):
+        grupo = grupoParentesis[ix]
+        numP = numParentesis(grupo)
+        if numP > 0:
+            for j in range(ix, ix+numP):
+                if grupoParentesis[j] != '':
+                   return 0
+            res.append(numP, grupo[numP:])
+            ix += numP
+
+    return res
+        
 def romano_a_arabigo(numRomano):
     numArabigo = 0
     numRepes = 1
     ultimoCaracter = ''
     for letra in numRomano: 
-        #incrementamos el valor del número arábigo con el valor numérico del símbolo romano
+            # incrementamos el valor del número arábigo con el valor numérico del símbolo romano
         if letra in valores:
             numArabigo += valores[letra]
             if ultimoCaracter == '':
                 pass
-            elif ultimoCaracter == "(":
-                ultimoCaracter = 0
-            elif ultimoCaracter == ")":
-                ultimoCaracter = 0
             elif valores[ultimoCaracter] > valores[letra]:
                 numRepes = 1
             elif valores[ultimoCaracter] == valores[letra]:
@@ -40,70 +70,36 @@ def romano_a_arabigo(numRomano):
 
                 numArabigo -= valores[ultimoCaracter]*2
                 numRepes = 1
-        elif letra == "(":
-            pass
-        elif letra == ")":
-            numArabigo = numArabigo*1000
-            numRepes = 1
-            
+        elif ultimoCaracter == ')':
+            numArabigo = numArabigo * 1000
         else:  #si el simbolo romano no es permitido devolvemos error (0)
             return 0
+
         ultimoCaracter = letra
 
     return numArabigo
 
-def arabigo_a_romano(numArabigo):
+def invertir(cad):
+    res = ''
+    for i in range(len(cad)-1, -1, -1):
+        res+= cad[i]
+    return res
 
-    numArabigo = str(numArabigo)
-    numDigit = len(numArabigo)
-    
-    numRomano = []
- 
-    for digit in numArabigo:
-        digit = int(digit)
-        if numDigit == 1:
-            if digit <= 3:
-                numRomano.append(int(digit)*"I")
-            elif digit == 4:
-                numRomano.append("IV")
-            elif digit == 5:
-                numRomano.append("V")
-            elif digit >= 6 and digit <=8:
-                numRomano.append("V"+int(digit-5)*"I")
-            elif digit == 9:
-                numRomano.append("IX")
-            numDigit -= 1
-            
-        if numDigit == 2:
-            if digit <= 3:
-                numRomano.append(int(digit)*"X")
-            elif digit == 4:
-                numRomano.append("XL")
-            elif digit == 5:
-                numRomano.append("L")
-            elif digit >= 6 and digit <=8:
-                numRomano.append("L"+int(digit-5)*"X")
-            elif digit == 9:
-                numRomano.append("XC")
-            numDigit -= 1
-        
-        if numDigit == 3:
-            if digit <= 3:
-                numRomano.append(int(digit)*"C")
-            elif digit == 4:
-                numRomano.append("CD")
-            elif digit == 5:
-                numRomano.append("D")
-            elif digit >= 6 and digit <=8:
-                numRomano.append("D"+int(digit-5)*"C")
-            elif digit == 9:
-                numRomano.append("CM")
-            numDigit -= 1
-        
-        if numDigit == 4:
-            numRomano.append(int(digit)*"M")
-            numDigit -= 1
-            
-        if numDigit == 0:
-            numRomanoCont = "".join(numRomano)
-            return numRomanoCont
+def arabigo_a_romano(valor):
+    cad = invertir(str(valor))
+    res = ''
+
+    for i in range(len(cad)-1, -1, -1):
+        digit = int(cad[i])
+        if digit <= 3:
+            res += digit*rangos[i][1]
+        elif digit == 4:
+            res += (rangos[i][1]+rangos[i][5])
+        elif digit == 5:
+            res += rangos[i][5]
+        elif digit < 9:
+            res += (rangos[i][5]+rangos[i][1]*(digit-5))
+        else:
+            res += rangos[i][1]+rangos[i]['next']
+
+    return res

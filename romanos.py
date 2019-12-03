@@ -18,7 +18,6 @@ def numParentesis(cadena):
             break
     return num
 
-
 def contarParentesis(numRomano):
     res = []
     grupoParentesis = numRomano.split(')')
@@ -28,20 +27,30 @@ def contarParentesis(numRomano):
         grupo = grupoParentesis[ix]
         numP = numParentesis(grupo)
         if numP > 0:
-            for j in range(ix, ix+numP):
+            for j in range(ix+1, ix+numP):
                 if grupoParentesis[j] != '':
-                   return 0
-            res.append(numP, grupo[numP:])
-            ix += numP
+                    return 0 #Explota o Falla
+            ix += numP - 1
+
+        if len(grupo[numP:]) > 0:
+            res.append((numP, grupo[numP:]))
+
+        ix += 1
+        
+    #Este if sirve para tratar los casos de parentesis mal formateados
+    for i in range(len(res)-1):
+        if res[i][0] <= res[i+1][0]:
+            return 0
 
     return res
-        
-def romano_a_arabigo(numRomano):
-    numArabigo = 0
+
+def romano_individual(numRomano):
     numRepes = 1
     ultimoCaracter = ''
+    numArabigo = 0
+
     for letra in numRomano: 
-            # incrementamos el valor del número arábigo con el valor numérico del símbolo romano
+        #incrementamos el valor del numero arabigo con el valor numerico del simbolo romano
         if letra in valores:
             numArabigo += valores[letra]
             if ultimoCaracter == '':
@@ -52,26 +61,18 @@ def romano_a_arabigo(numRomano):
                 numRepes += 1
                 if letra in valores5:
                     return 0
-
                 if numRepes > 3:
                     return 0
-
-
             elif valores[ultimoCaracter] < valores[letra]:
                 if numRepes > 1: # No permite repeticiones en las restas
                     return 0
-
                 if ultimoCaracter in valores5: #No permite restas de valores de 5 (5, 50, 500)
                     return 0
-
-                distancia = simbolosOrdenados.index(letra) - simbolosOrdenados.index(ultimoCaracter) #No permite que se resten unidades de más de un orden
+                distancia = simbolosOrdenados.index(letra) - simbolosOrdenados.index(ultimoCaracter) #No permite que se resten unidades de mas de un orden
                 if distancia > 2:
                     return 0
-
                 numArabigo -= valores[ultimoCaracter]*2
                 numRepes = 1
-        elif ultimoCaracter == ')':
-            numArabigo = numArabigo * 1000
         else:  #si el simbolo romano no es permitido devolvemos error (0)
             return 0
 
@@ -79,13 +80,51 @@ def romano_a_arabigo(numRomano):
 
     return numArabigo
 
+
+def romano_a_arabigo(numRomano):
+    numArabigoTotal = 0
+    res = contarParentesis(numRomano)
+
+    for elemento in res:
+        romano = elemento[1]
+        factor = pow(10, 3 * elemento[0])
+
+        numArabigoTotal += romano_individual(romano) * factor
+
+    return numArabigoTotal
+
+
 def invertir(cad):
+    return cad[::-1]
+
     res = ''
     for i in range(len(cad)-1, -1, -1):
         res+= cad[i]
     return res
 
-def arabigo_a_romano(valor):
+def gruposDeMil(num):
+    cad = str(num)
+    dac = invertir(cad)
+    grupos = []
+    
+    rango = 0
+    for i in range(0, len(dac), 3):
+        grupos.append([rango, int(invertir(dac[i:i+3]))])
+        rango += 1
+
+    for i in range(len(grupos)-1):
+        grupoMenor = grupos[i]
+        grupoMayor = grupos[i+1]
+        unidadesMayor = grupoMayor[1] % 10
+
+        if unidadesMayor < 4:
+            grupoMenor[1] = grupoMenor[1] + unidadesMayor * 1000
+            grupoMayor[1] = grupoMayor[1] - unidadesMayor
+
+    grupos.reverse()
+    return grupos
+
+def arabigo_individual(valor):
     cad = invertir(str(valor))
     res = ''
 
@@ -103,3 +142,19 @@ def arabigo_a_romano(valor):
             res += rangos[i][1]+rangos[i]['next']
 
     return res
+
+
+def arabigo_a_romano(valor):
+    g1000 = gruposDeMil(valor)
+    romanoGlobal = ''
+
+    for grupo in g1000:
+        rango = grupo[0]
+        numero = grupo[1]
+        if numero > 0:
+            miRomano = '(' * rango + arabigo_individual(numero) + ')'*rango
+        else: 
+            miRomano = ''
+        romanoGlobal += miRomano
+
+    return romanoGlobal
